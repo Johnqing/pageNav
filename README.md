@@ -1,4 +1,4 @@
-分页插件
+﻿分页插件
 =======
 
 
@@ -23,3 +23,4 @@ $('elem').pageNav({
 	callback: function(){}
 });
 ```
+![pagenav](demo.png)
