@@ -23,4 +23,4 @@ $('elem').pageNav({
 	callback: function(){}
 });
 ```
-![pagenav](demo.png)
+![pagenav](https://github.com/Johnqing/pageNav/blob/master/demo.png)
