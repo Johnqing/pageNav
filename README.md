@@ -1,6 +1,7 @@
 ﻿分页插件
 =======
 
+![pagenav](https://f.cloud.github.com/assets/2571697/1341498/21c0b386-364b-11e3-869e-7b13186f6ba8.png)
 
 ## 调用
 
@@ -23,5 +24,6 @@ $('elem').pageNav({
 	callback: function(){}
 });
 ```
-![pagenav](https://f.cloud.github.com/assets/2571697/1341498/21c0b386-364b-11e3-869e-7b13186f6ba8.png)
+
+
 
