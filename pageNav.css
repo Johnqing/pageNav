@@ -1,0 +1,24 @@
+/*翻页*/
+.pagenav{
+	text-align: right;
+}
+.pagenav em{
+	overflow: hidden;
+	display: inline-block;
+	cursor: pointer;
+	margin: 0 2px;
+	border: 1px solid #eee;
+	border-radius: 2px;
+	padding: 2px 8px;
+	font-weight: normal;	
+	font-family: 'verdana';
+	color: #999;
+}
+
+.pagenav .current{
+	background: #3eaf0e;
+	color: #fff; 
+}
+.pagenav .hide{
+	display: none;
+}
