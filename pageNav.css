@@ -1,7 +1,4 @@
 /*翻页*/
-.pagenav{
-	text-align: right;
-}
 .pagenav em{
 	overflow: hidden;
 	display: inline-block;
