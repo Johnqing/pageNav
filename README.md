@@ -13,10 +13,6 @@ $('elem').pageNav({
 	pageWrapClass: 'pagenav' ,
 	// 当前的样式
 	curClass: 'current',
-	// 是否显示首页
-	first: true,
-	// 是否显示尾页
-	last: true,
 	// 默认当前是第几页
 	defPage: 1,
 	// 总页数
