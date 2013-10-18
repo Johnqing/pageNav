@@ -94,8 +94,6 @@
     tags: 'em',
     pageWrapClass: 'pagenav',
     curClass: 'current',
-    first: true,
-    last: true,
     defPage: 1,
     total: 5,
     callback: function() {}
