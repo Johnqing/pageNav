@@ -10,11 +10,10 @@ Page:: =
 	init: ->
 		that = @
 		opts = that.opts
-		tmp = that.createPage opts.defPage
 
 		wrap = that.pageWrap = $ '<div></div>'
 		wrap.addClass opts.pageWrapClass
-		wrap.html tmp
+		that.createPage opts.defPage
 		that.target.after wrap
 		that.p
 		that.bindEvent()
@@ -24,33 +23,43 @@ Page:: =
 		that = @
 		opts = that.opts
 		tags = opts.tags
-		pHide = nHide = ''
-		if curPage <= 1
-			pHide = 'hide'
-		if curPage >= opts.total
-			nHide = 'hide'
-		tagFirst = "<#{tags} data-n=\"1\" class=\"first\">首页</#{tags}>"
-		tagString = """
-		<#{tags} class=\"prev #{pHide}\">上一页</#{tags}>
-		"""
-		`for (var i=0; i<opts.total; i++){
-			var cla = '';
-			if((i+1) === curPage){
-				cla = opts.curClass
+		total = opts.total*1 or 1
+		curPage = curPage*1 or 1
+
+		# 超过100页后
+		# 按每2页刷新一次分页
+		page = if total > 100 then 2 else 4
+		# length
+		# 如果当前页数，分页后超过
+		# 总页数 使用总页数
+		len = if curPage + page > total then total else curPage + page
+		# 起点
+		# 如果小于1 就是第一页
+		i = if curPage - page < 1 then 1 else curPage - page
+
+		arr = ['<em class="prev">\u4e0a\u4e00\u9875</em>']
+
+		if curPage - page > 2
+			arr.push '<em data-n="1">1</em><em class="no"> ... </em>'
+		else if curPage - page is 2
+			arr.push '<em data-n="1">1</em>'
+
+		`for(;i <= len; i++){
+			if (i == curPage){
+				arr.push('<em data-n="'+i+'" class="current">'+i+'</em>')
+			}else{
+				arr.push('<em data-n="'+i+'">'+i+'</em>')
 			}
-			tagString += '<' + tags + ' data-n="'+(i+1)+'" class="' + cla + '">' + (i+1) + '</'+tags+'>';
 		}`
-		tagString += """
-		<#{tags} class=\"next #{nHide}\">下一页</#{tags}>		
-		"""
-		tagLast = "<#{tags} data-n=\"#{opts.total}\" class=\"last\">尾页</#{tags}>"
 
-		if opts.first
-			tagString = tagFirst + tagString
-		if opts.last
-			tagString += tagLast		
+		if curPage + page < total - 1
+			arr.push "<em class=\"no\"> ... </em><em data-n=\"#{total}\">#{total}</em>"
+		else if curPage + page is total - 1
+			arr.push "<em data-n=\"#{total}\">#{total}</em>"
 
-		return tagString
+		arr.push '<em class="next">\u4e0b\u4e00\u9875</em>'
+
+		that.pageWrap.html arr.join ''
 	# 获取索引
 	getIndex: (obj) ->
 		index = @currPage
@@ -66,20 +75,6 @@ Page:: =
 			index = obj.attr 'data-n'
 		return index | 0
 
-	# 上一页下一页显示隐藏
-	pNSH: (index) ->
-		pageWrap = @pageWrap
-		if index <= 1
-			pageWrap.find('.prev').addClass 'hide'
-			pageWrap.find('.next').removeClass 'hide'
-			return
-		else if index >= @opts.total
-			pageWrap.find('.next').addClass 'hide'
-			pageWrap.find('.prev').removeClass 'hide'
-			return
-		pageWrap.find('.next').removeClass 'hide'
-		pageWrap.find('.prev').removeClass 'hide'
-		return
 	# 事件绑定
 	bindEvent: ->
 		that = @
@@ -90,11 +85,8 @@ Page:: =
 			if typeof index isnt 'number'
 				return index
 
-			that.pNSH index
-
-
 			that.currPage = index
-			that.pageWrap.children().eq(1+index).addClass(opts.curClass).siblings().removeClass(opts.curClass)
+			that.createPage index
 			opts.callback and opts.callback index
 			return
 		return

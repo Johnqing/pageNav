@@ -13,47 +13,46 @@
 
   Page.prototype = {
     init: function() {
-      var opts, that, tmp, wrap;
+      var opts, that, wrap;
       that = this;
       opts = that.opts;
-      tmp = that.createPage(opts.defPage);
       wrap = that.pageWrap = $('<div></div>');
       wrap.addClass(opts.pageWrapClass);
-      wrap.html(tmp);
+      that.createPage(opts.defPage);
       that.target.after(wrap);
       that.p;
       that.bindEvent();
     },
     createPage: function(curPage) {
-      var nHide, opts, pHide, tagFirst, tagLast, tagString, tags, that;
+      var arr, i, len, opts, page, tags, that, total;
       that = this;
       opts = that.opts;
       tags = opts.tags;
-      pHide = nHide = '';
-      if (curPage <= 1) {
-        pHide = 'hide';
+      total = opts.total * 1 || 1;
+      curPage = curPage * 1 || 1;
+      page = total > 100 ? 2 : 4;
+      len = curPage + page > total ? total : curPage + page;
+      i = curPage - page < 1 ? 1 : curPage - page;
+      arr = ['<em class="prev">\u4e0a\u4e00\u9875</em>'];
+      if (curPage - page > 2) {
+        arr.push('<em data-n="1">1</em><em class="no"> ... </em>');
+      } else if (curPage - page === 2) {
+        arr.push('<em data-n="1">1</em>');
       }
-      if (curPage >= opts.total) {
-        nHide = 'hide';
-      }
-      tagFirst = "<" + tags + " data-n=\"1\" class=\"first\">首页</" + tags + ">";
-      tagString = "<" + tags + " class=\"prev " + pHide + "\">上一页</" + tags + ">";
-      for (var i=0; i<opts.total; i++){
-			var cla = '';
-			if((i+1) === curPage){
-				cla = opts.curClass
+      for(;i <= len; i++){
+			if (i == curPage){
+				arr.push('<em data-n="'+i+'" class="current">'+i+'</em>')
+			}else{
+				arr.push('<em data-n="'+i+'">'+i+'</em>')
 			}
-			tagString += '<' + tags + ' data-n="'+(i+1)+'" class="' + cla + '">' + (i+1) + '</'+tags+'>';
 		};
-      tagString += "<" + tags + " class=\"next " + nHide + "\">下一页</" + tags + ">		";
-      tagLast = "<" + tags + " data-n=\"" + opts.total + "\" class=\"last\">尾页</" + tags + ">";
-      if (opts.first) {
-        tagString = tagFirst + tagString;
+      if (curPage + page < total - 1) {
+        arr.push("<em class=\"no\"> ... </em><em data-n=\"" + total + "\">" + total + "</em>");
+      } else if (curPage + page === total - 1) {
+        arr.push("<em data-n=\"" + total + "\">" + total + "</em>");
       }
-      if (opts.last) {
-        tagString += tagLast;
-      }
-      return tagString;
+      arr.push('<em class="next">\u4e0b\u4e00\u9875</em>');
+      return that.pageWrap.html(arr.join(''));
     },
     getIndex: function(obj) {
       var index;
@@ -73,21 +72,6 @@
       }
       return index | 0;
     },
-    pNSH: function(index) {
-      var pageWrap;
-      pageWrap = this.pageWrap;
-      if (index <= 1) {
-        pageWrap.find('.prev').addClass('hide');
-        pageWrap.find('.next').removeClass('hide');
-        return;
-      } else if (index >= this.opts.total) {
-        pageWrap.find('.next').addClass('hide');
-        pageWrap.find('.prev').removeClass('hide');
-        return;
-      }
-      pageWrap.find('.next').removeClass('hide');
-      pageWrap.find('.prev').removeClass('hide');
-    },
     bindEvent: function() {
       var opts, that;
       that = this;
@@ -99,9 +83,8 @@
         if (typeof index !== 'number') {
           return index;
         }
-        that.pNSH(index);
         that.currPage = index;
-        that.pageWrap.children().eq(1 + index).addClass(opts.curClass).siblings().removeClass(opts.curClass);
+        that.createPage(index);
         opts.callback && opts.callback(index);
       });
     }
